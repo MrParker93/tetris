@@ -1,5 +1,7 @@
 from constants import BOARDWIDTH
 
+
+# Handle all Tetrominos
 class Tetromino:
     O_MINO = {
         "shape": "O",
@@ -213,7 +215,7 @@ class Tetromino:
             self.mino["block"][3]
         ]
         return orientations
-        
+
     def rotate_left(self):
         self.current_orientation -= 1
         return self.orientations[self.current_orientation % self.rotations]

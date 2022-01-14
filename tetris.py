@@ -13,7 +13,7 @@ class Tetris:
         pass
 
     def draw(self):
-        pyxel.cls(0)
+        pyxel.cls(0)  # Clears screen and sets background to black
 
 if __name__ == "__main__":
     Tetris()
