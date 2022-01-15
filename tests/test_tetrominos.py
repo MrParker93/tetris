@@ -20,8 +20,8 @@ class TestTetrominos:
         yield t
 
     def test_O_tetromino_block_shape(self, t_O):
-        assert t_O.block == [[0, 10, 10, 0],
-                             [0, 10, 10, 0],
+        assert t_O.block == [[10, 10, 0, 0],
+                             [10, 10, 0, 0],
                              [0, 0, 0, 0],
                              [0, 0, 0, 0]]
 
