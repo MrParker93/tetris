@@ -26,7 +26,7 @@ class Tetromino:
             [0, 0, 0, 0],
             [0, 0, 0, 0]]
         ],
-        "x": BOARDWIDTH // 2 - 4 // 2,
+        "x": BOARDWIDTH // 2 - 4 // 2 + 1,
         "y": -2,
         "u": 0,
         "v": 208,
@@ -217,6 +217,8 @@ class Tetromino:
         self.tetrominos = [self.O_MINO, self.S_MINO, self.Z_MINO, self.J_MINO, self.L_MINO, self.T_MINO, self.I_MINO]
         self.mino = self.tetrominos[generator]
         self.block = self.mino["block"][0]
+        self.estimate = (48, 0)  # The (u, v) coordinate in the image map for the colour of the ghost version of the tetromino
+        self.destroy = (32, 0)  # The (u, v) coordinate in the image map for the colour of the tetromino before clearing the line
         self.rotations = 4
         self.current_orientation = 0
         self.orientations = self.get_orientations()
