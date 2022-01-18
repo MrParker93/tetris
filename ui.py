@@ -16,7 +16,7 @@ class UI:
         pyxel.bltm(C.LEFTRIGHT_PADDING, C.TOP_PADDING, 0, 0, 0, C.BOARDWIDTH * 10, C.BOARDHEIGHT * 10)
         # pyxel.rectb(4, 8, (C.BOARDWIDTH * C.GRID_SIZE) + 1, (19 * C.GRID_SIZE) + 1, 7)
         # pyxel.rectb((C.WINDOW / 2) + 59, 16, 54, 48, 5)
-        pyxel.rectb(C.WINDOW / 2 , 16, 54, 48, 7)
+        # pyxel.rectb(C.WINDOW / 2 , 16, 54, 48, 7)
 
     def draw_grid(self):
         for line in range(10):
@@ -39,7 +39,7 @@ class UI:
         pyxel.FONT_HEIGHT = 12
         pyxel.FONT_WIDTH = 10
         # pyxel.text(C.WINDOW / 2 + 1, 9, "HOLD: ", 10)
-        pyxel.text(C.WINDOW / 2 + 1, 9, "NEXT: ", 10)
+        pyxel.text(C.WINDOW / 2, 9, "NEXT: ", 10)
         pyxel.text(C.WINDOW / 2 + 1, 70, "LEVEL: ", 10)
         pyxel.text(C.WINDOW / 2 + 30, 70, str(self.level), 6)
         pyxel.text(C.WINDOW / 2 + 1, 80, "SCORE: ", 10)

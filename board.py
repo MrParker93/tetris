@@ -10,25 +10,21 @@ class Board:
         self.height = height
         self.board = [[0] * self.width for _ in range(self.height)]
         self.grid = deepcopy(self.board)
+        self.cleared_lines = 0
+        self.consecutive_clears = 0
     
     # Adds tetromino to board
     def drop_block(self, x, y, mino, orientation):
         block = mino["block"][orientation]
-        image_map_x = mino["u"]  # x coordinate of coinciding tetromino in the image map pyxeleditor
-        image_map_y = mino["v"]  # y coordinate of coinciding tetromino in the image map pyxeleditor
 
         for row in range(4):
             for col in range(4):
                 if block[row][col] != 0:
-                    temp_row = row * C.GRID_SIZE
-                    temp_col = col * C.GRID_SIZE
                     self.grid[row + y][col + x] = block[row][col]
 
     # Shows where the tetromino will land on the board
     def drop_block_estimate(self, x, y, mino, orientation):
         block = mino["block"][orientation]
-        image_map_x = 48
-        image_map_y = 0
         temp_x, temp_y = x, y
 
         while not self.detect_collision(temp_x, temp_y, mino, orientation):
@@ -37,8 +33,6 @@ class Board:
         for row in range(4):
             for col in range(4):
                 if block[row][col] != 0:
-                    temp_row = row * C.GRID_SIZE
-                    temp_col = col * C.GRID_SIZE
                     self.grid[row + temp_y][col + temp_x] = 1
 
     # Draws grid to screen
@@ -47,10 +41,6 @@ class Board:
         image_map_y = mino["v"]
         estimate_image_map_x = estimate[0]
         estimate_image_map_y = estimate[1]
-
-        print(*self.grid,sep="\n")
-        print("---------------------------")
-        print()
 
         # Returns row and column of block position in the grid as a tuple
         grid_coords = self.get_coordinates(self.grid)  
@@ -78,15 +68,29 @@ class Board:
                     # Draws the current tetromino on the grid
                     pyxel.blt(col * C.GRID_SIZE + C.LEFTRIGHT_PADDING + 8, row * C.GRID_SIZE + C.TOP_PADDING, 0, image_map_x + current_block_col, image_map_y + current_block_row, C.GRID_SIZE, C.GRID_SIZE)
 
-                    if grid_estimate_coords:
-                        # Set the ghost tetromino position on the grid (row, col) to corresponding value in the tuple
-                        ghost_grid_row, ghost_grid_col = grid_estimate_coords[counter]
+                    # if grid_estimate_coords:
+                    #     # Set the ghost tetromino position on the grid (row, col) to corresponding value in the tuple
+                    #     ghost_grid_row, ghost_grid_col = grid_estimate_coords[counter]
                         
-                        # Draws the current tetromino's ghost on the grid
-                        pyxel.blt(ghost_grid_col * C.GRID_SIZE + C.LEFTRIGHT_PADDING + 8, ghost_grid_row * C.GRID_SIZE + C.TOP_PADDING, 0, estimate_image_map_x + current_block_col, estimate_image_map_y + current_block_row, C.GRID_SIZE, C.GRID_SIZE)
+                    #     # Draws the current tetromino's ghost on the grid
+                    #     pyxel.blt(ghost_grid_col * C.GRID_SIZE + C.LEFTRIGHT_PADDING + 8, ghost_grid_row * C.GRID_SIZE + C.TOP_PADDING, 0, estimate_image_map_x + current_block_col, estimate_image_map_y + current_block_row, C.GRID_SIZE, C.GRID_SIZE)
 
                     if counter < 3:
                         counter += 1
+
+    # Draw next tetromino to screen
+    def draw_next(self, mino):
+        block = mino.mino["block"][mino.current_orientation]
+        shape = mino.mino["shape"]
+        image_map_x = mino.mino["u"]  # x coordinate of coinciding tetromino in the image map pyxeleditor
+        image_map_y = mino.mino["v"]  # y coordinate of coinciding tetromino in the image map pyxeleditor
+
+        for row in range(4):
+            for col in range(4):
+                if block[row][col] != 0:
+                    temp_row = row * 8
+                    temp_col = col * 8
+                    pyxel.blt(C.WINDOW / 2 + temp_col, 25 + temp_row, 0, image_map_x + temp_col, image_map_y + temp_row, 8, 8)
 
     # Gets the row and column of each non-zero value in the block/grid and returns it as a tuple
     def get_coordinates(self, two_d_list):
@@ -119,3 +123,22 @@ class Board:
             for col in range(4):
                 if block[row][col] != 0:
                     self.board[row + y][col + x] = block[row][col]
+
+    # Clears a row if it's full
+    def clear_lines(self):
+        lines_to_clear = []
+        for index, row in enumerate(range(20)):
+            if self.board[row].count(0) == 0:
+                lines_to_clear.append(index)
+
+        if len(lines_to_clear) > 0:
+            for index in range(len(lines_to_clear)):
+                self.board.pop(lines_to_clear[index])
+                self.board.insert(2, [0] * C.BOARDWIDTH)
+            
+            self.cleared_lines = len(lines_to_clear)
+            self.consecutive_clears += 1
+            return True
+        else:
+            self.consecutive_clears = -1
+            return False

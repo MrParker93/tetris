@@ -16,6 +16,9 @@ BOARDHEIGHT = 40
 # Size of each block in pixels
 GRID_SIZE = 8
 
+# Bag of numbers to generate tetrominos
+BAG = [_ for _ in range(7)]
+
 # Padding for UI positioning
 TOP_PADDING = 15
 LEFTRIGHT_PADDING = 20
