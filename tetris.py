@@ -5,8 +5,9 @@ import constants as C
 from board import Board
 from score import Score
 from movement import Move
+from scenes import Scenes
 from constants import Scene
-from copy import copy, deepcopy
+from copy import deepcopy
 from tetromino import Tetromino
 
 
@@ -22,19 +23,21 @@ class Tetris:
     def reset(self):
         self.state = "running"
         self.is_gameover = False
-        self.scene = Scene.TITLE_SCENE
+        self.current_scene = Scenes(Scene.TITLE_SCENE)
         self.lock_delay = C.LOCK_DELAY
         self.block_fall_speed = C.FALL_SPEED
         self.s = Score()
+        self.ui = UI()
         self.level = self.s.level
+        self.levelup = ""
         self.score = self.s.score
         self.lines = self.s.lines
         self.combos = self.s.combos
         self.spins = self.s.spins
-        self.levelup = ""
-        self.spin_type = self.s.spin_type
-        self.score_type = self.s.score_type
-        self.ui = UI()
+        self.consecutive_spins = 0
+        self.spin_type = ""
+        self.score_type = ""
+        self.is_locked = False
         random.shuffle(C.BAG)
         self.tetromino = Tetromino(C.BAG[0])
         self.block_position_x = self.tetromino.mino["x"]  
@@ -152,7 +155,6 @@ class Tetris:
                 if self.block_position_y > 0:
                     self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                     self.current_block_orientation = self.move.rotate_right()
-                    # self.rotated = True
 
                     if not self.move.can_rotate(self.tetromino, self.block_position_x, self.block_position_y, self.current_block_orientation):
                         wallkicks = self.tetromino.wallkicks[:4]
@@ -164,7 +166,6 @@ class Tetris:
                                 break
                         else:
                             self.current_block_orientation -= 1 if self.current_block_orientation > 0 else -3
-                    #         self.rotated = False
 
                     self.b.grid = deepcopy(self.b.board)
                     self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
@@ -175,7 +176,6 @@ class Tetris:
                 if self.block_position_y > 0:
                     self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                     self.current_block_orientation = self.move.rotate_left()
-                    # self.rotated = True
 
                     if not self.move.can_rotate(self.tetromino, self.block_position_x, self.block_position_y, self.current_block_orientation):
                         wallkicks = self.tetromino.wallkicks[4:]
@@ -187,7 +187,6 @@ class Tetris:
                                 break
                         else:
                             self.current_block_orientation += 1 if self.current_block_orientation < 3 else -3
-                    #         self.rotated = False
 
                     self.b.grid = deepcopy(self.b.board)
                     self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
@@ -195,29 +194,37 @@ class Tetris:
 
     # Draws the game every frame, runs at 60fps
     def draw(self):
-        pyxel.cls(0)  # Clears screen and sets background to black
-        self.text()
-        self.ui.draw_game_borders()
-        self.b.draw_board(self.tetromino.mino, self.tetromino.estimate, self.tetromino.image_map_position, self.tetromino.current_orientation)
-        self.b.draw_next(self.next_tetromino)
-        if self.spin_type and self.tetromino.mino["shape"] == "T":
-            self.show_spin_type(self.spin_type, self.prev_tetromino, self.prev_block_position_x, self.prev_block_position_y)
-            if pyxel.frame_count % 480 == 0:
-                self.s.spin_type = ""
-        
-        # Pause screen
-        if self.state == "paused":
-            self.ui.paused()
+        if self.current_scene.scene == Scene.TITLE_SCENE:
+            self.current_scene.title_scene()
+        else:
+            pyxel.cls(0)  # Clears screen and sets background to black
+            self.text()
+            self.ui.draw_game_borders()
+            self.b.draw_board(self.tetromino.mino, self.tetromino.estimate, self.tetromino.image_map_position, self.tetromino.current_orientation)
+            self.b.draw_next(self.next_tetromino)
+            if self.spin_type:
+                self.s.display_spin_type(self.spin_type, self.s.consecutive_spins)
+                if pyxel.frame_count % 480 == 0:
+                    self.spin_type = ""
 
-        # Game over screen
-        if self.is_gameover:
-            self.ui.game_over_screen()
-            self.state = "stopped"
-    
-    # Displays type of spin performed in game
-    def show_spin_type(self, text, mino, x, y):
-        centre_x, centre_y = mino.centre
-        pyxel.text(centre_x * C.GRID_SIZE + (x * C.GRID_SIZE), centre_y * C.GRID_SIZE + (y * C.GRID_SIZE), text, 7)
+            if self.score_type or self.b.cleared_lines == 4:
+                self.s.display_score_type(self.score_type, self.b.cleared_lines)
+                if pyxel.frame_count % 480 == 0:
+                    self.score_type = ""
+                    
+            if self.levelup:
+                self.show_level_up(self.levelup)
+                if pyxel.frame_count % 480 == 0:
+                    self.levelup = ""
+            
+            # Pause screen
+            if self.state == "paused":
+                self.ui.paused()
+
+            # Game over screen
+            if self.is_gameover:
+                self.ui.game_over_screen()
+                self.state = "stopped"
 
     # Checks if game over condition is true
     def check_game_over(self):
@@ -242,24 +249,26 @@ class Tetris:
             
                 # Check if the last move was a t-spin
                 if self.s.is_valid_tspin(self.block_position_x, self.block_position_y, self.tetromino.shape, self.tetromino.centre, self.b.board, self.b.board_walls):
-                    self.s.consecutive_spins += 1
+                    self.consecutive_spins += 1
                     self.spins += 1
-                    self.score += self.s.add_points(self.b.cleared_lines, combo=True, t_spin=True)
+                    self.spin_type = "T-SPIN!"
+                    self.score += self.s.add_points(self.b.cleared_lines, self.consecutive_spins, combo=True, t_spin=True)
 
-                # If no valid t-spins or the tetromino is not T shape
+                # If no valid t-spins
                 else:
-                    self.score += self.s.add_points(self.b.cleared_lines, combo=True, t_spin=False)
+                    self.score_type = "COMBO!"
+                    self.score += self.s.add_points(self.b.cleared_lines, self.consecutive_spins, combo=True, t_spin=False)
             
             # If no consecutive clears (no combo)
             else:
+                self.consecutive_spins = 0
                 # Check if the last move was a t-spin
                 if self.s.is_valid_tspin(self.block_position_x, self.block_position_y, self.tetromino.shape, self.tetromino.centre, self.b.board, self.b.board_walls):
                     self.spins += 1
-                    self.score += self.s.add_points(self.b.cleared_lines, combo=False, t_spin=True)
+                    self.spin_type = "T-SPIN!"
+                    self.score += self.s.add_points(self.b.cleared_lines, self.consecutive_spins, combo=False, t_spin=True)
                 else:
-                    self.score += self.s.add_points(self.b.cleared_lines, combo=False, t_spin=False)
-        
-        self.s.consecutive_spins = 0
+                    self.score += self.s.add_points(self.b.cleared_lines, self.consecutive_spins, combo=False, t_spin=False)
 
     # Generates a new tetromino
     def generate_new_block(self):
@@ -269,11 +278,15 @@ class Tetris:
         self.current_block_orientation = self.next_tetromino.current_orientation
         self.next_tetromino = Tetromino(C.BAG[random.randint(0, 6)])
 
+    # Displays level up when player reaches next level
+    def show_level_up(self, text):
+        pyxel.text(C.WINDOW / 2 + 45, 70, text, pyxel.frame_count % 15)
+
     # Handles all text on UI
     def text(self):
         pyxel.FONT_HEIGHT = 12
         pyxel.FONT_WIDTH = 10
-        # pyxel.text(C.WINDOW / 2 + 1, 9, "HOLD: ", 10)
+        pyxel.text(C.WINDOW / 2 + 45, 9, "HOLD: ", 10)
         pyxel.text(C.WINDOW / 2, 9, "NEXT: ", 10)
         pyxel.text(C.WINDOW / 2 + 1, 70, "LEVEL: ", 10)
         pyxel.text(C.WINDOW / 2 + 30, 70, str(self.level), 6)

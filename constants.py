@@ -44,7 +44,15 @@ POINTS = {
 
 # Points given for different t-spins
 T_SPIN = {
-    "mini": 100,
+    "single": 800,
+    "double": 1200,
+    "triple": 1600,
+    "b2b double": 1800,
+    "b2b triple": 2400
+}
+
+# Points given for I, S, Z, J and L spins
+TWISTS = {
     "single": 800,
     "double": 1200,
     "triple": 1600,
