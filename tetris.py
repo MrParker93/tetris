@@ -23,7 +23,7 @@ class Tetris:
     def reset(self):
         self.state = "running"
         self.is_gameover = False
-        self.current_scene = Scenes(Scene.TITLE_SCENE)
+        self.current_scene = Scenes(Scene.GAMEOVER_SCENE)
         self.lock_delay = C.LOCK_DELAY
         self.block_fall_speed = C.FALL_SPEED
         self.s = Score()
@@ -196,6 +196,16 @@ class Tetris:
     def draw(self):
         if self.current_scene.scene == Scene.TITLE_SCENE:
             self.current_scene.title_scene()
+        elif self.current_scene.scene == Scene.SETTINGS_SCENE:
+            self.current_scene.settings_scene()
+        elif self.current_scene.scene == Scene.SELECT_SPEED_SCENE:
+            self.current_scene.select_fall_speed_scene()
+        elif self.current_scene.scene == Scene.SELECT_TETRIS_SCENE:
+            self.current_scene.select_tetris_scene()
+        elif self.current_scene.scene == Scene.RANKINGS_SCENE:
+            self.current_scene.show_rankings_scene()
+        elif self.current_scene.scene == Scene.GAMEOVER_SCENE:
+            self.current_scene.game_over_scene()
         else:
             pyxel.cls(0)  # Clears screen and sets background to black
             self.text()

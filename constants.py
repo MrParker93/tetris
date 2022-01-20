@@ -3,8 +3,13 @@ from enum import Enum
 # Representing different game scenes as an Enum class. Design decision for cleaner code.
 class Scene(Enum):
     TITLE_SCENE = 1
-    PLAY_SCENE = 2
-    GAMEOVER_SCENE = 3
+    SETTINGS_SCENE = 2
+    SELECT_SPEED_SCENE = 3
+    SELECT_TETRIS_SCENE = 4
+    CONTROLS_SCENE = 5
+    RANKINGS_SCENE = 6
+    PLAY_SCENE = 7
+    GAMEOVER_SCENE = 8
 
 # Height and width of app window
 WINDOW = 256
