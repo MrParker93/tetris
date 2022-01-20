@@ -10,6 +10,7 @@ class Scene(Enum):
     RANKINGS_SCENE = 6
     PLAY_SCENE = 7
     GAMEOVER_SCENE = 8
+    PAUSE_SCENE = 9
 
 # Height and width of app window
 WINDOW = 256

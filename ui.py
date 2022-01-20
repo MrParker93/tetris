@@ -20,10 +20,4 @@ class UI:
             # Draw horizontal lines of the grid
             pyxel.line(C.LEFTRIGHT_PADDING + 8, C.TOP_PADDING + (216 / 27 * line), 107, C.TOP_PADDING + (216 / 27 * line), 1)
 
-    def paused(self):
-        pyxel.cls(0)
-        pyxel.text(C.WINDOW // 2 - 20, C.WINDOW // 2 - 12, "PAUSED", pyxel.frame_count % 9)
 
-    def game_over_screen(self):
-        pyxel.cls(0)
-        pyxel.text(C.WINDOW // 2 - 20, C.WINDOW // 2 - 12, "GAME OVER", pyxel.frame_count % 5)

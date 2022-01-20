@@ -1,5 +1,4 @@
 import pyxel
-import random
 from constants import Scene, WINDOW
 
 # Handles the different game scenes
@@ -7,6 +6,7 @@ class Scenes:
     def __init__(self, scene):
         self.x = 0
         self.y = 0
+        self.scene = scene
         self.destroy = pyxel.tilemap(2)
         self.tetromino_width_and_height_in_tilemap = [
             (4, 1),
@@ -36,12 +36,14 @@ class Scenes:
         elif scene == Scene.RANKINGS_SCENE:
             self.scene = scene
             self.display = self.show_rankings_scene()
-        elif scene == Scene.PLAY_SCENE:
+        elif scene == Scene.PAUSE_SCENE:
             self.scene = scene
-            self.display = self.play_scene()
-        else:
+            self.display = self.pause_scene()
+        elif scene == Scene.GAMEOVER_SCENE:
             self.scene = scene
             self.display = self.game_over_scene()
+        else:
+            self.scene = Scene.PLAY_SCENE
         
     def title_scene(self):
         pyxel.cls(0)
@@ -254,3 +256,45 @@ class Scenes:
         
         # Display "TITLE SCREEN"
         pyxel.bltm((WINDOW / 2) - 48, (WINDOW * 0.2) + ((WINDOW * 0.9) * 0.75), 1, 0, 256, 96, 8)
+
+    def pause_scene(self):
+        pyxel.cls(0)
+
+        # Displays "PAUSED"
+        pyxel.text((WINDOW / 2) - 10, WINDOW * 0.25, "PAUSED", pyxel.frame_count % 9)
+
+        # Display "RESUME"
+        pyxel.bltm((WINDOW / 2) - 24, WINDOW * 0.45, 1, 0, 352, 48, 8)
+        
+        # Display "CONTROLS"
+        pyxel.bltm((WINDOW / 2) - 32, WINDOW * 0.55, 1, 0, 32, 64, 8)
+
+    def controls_scene(self):
+        pyxel.cls(0)
+
+        # Display "CONTROLS"
+        pyxel.bltm((WINDOW / 2) - 32, WINDOW * 0.1, 1, 0, 32, 64, 8)
+
+        # Display "MOVE LEFT"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.125), 1, 0, 368, 136, 8)
+
+        # Display "MOVE RIGHT"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.25), 1, 0, 384, 136, 8)
+
+        # Display "SOFT DROP"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.375), 1, 0, 400, 136, 8)
+
+        # Display "HARD DROP"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.50), 1, 0, 416, 136, 8)
+
+        # Display "ROTATE LEFT"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.625), 1, 0, 432, 136, 8)
+
+        # Display "ROTATE RIGHT"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.750), 1, 0, 448, 136, 8)
+
+        # Display "HOLD TETROMINO"
+        pyxel.bltm((WINDOW / 2) - 68, (WINDOW * 0.1) + ((WINDOW * 0.75) * 0.875), 1, 0, 464, 136, 8)
+
+        # Displays "GO BACK"
+        pyxel.bltm((WINDOW / 2) - 28, WINDOW * 0.885, 1, 0, 176, 56, 8)

@@ -23,7 +23,7 @@ class Tetris:
     def reset(self):
         self.state = "running"
         self.is_gameover = False
-        self.current_scene = Scenes(Scene.GAMEOVER_SCENE)
+        self.current_scene = Scenes(Scene.PLAY_SCENE)
         self.lock_delay = C.LOCK_DELAY
         self.block_fall_speed = C.FALL_SPEED
         self.s = Score()
@@ -63,10 +63,11 @@ class Tetris:
         
         # Pauses the game
         if pyxel.btn(pyxel.KEY_P):
-            if self.state == "running" and not self.is_gameover and not self.scene == Scene.GAMEOVER_SCENE:
+            if self.state == "running" and not self.is_gameover and not self.current_scene == Scenes(Scene.GAMEOVER_SCENE):
                 self.state = "paused"
             else:
                 self.state = "running"
+                self.current_scene = Scenes(Scene.PLAY_SCENE)
 
         if self.state == "running":
 
@@ -84,7 +85,7 @@ class Tetris:
                         if self.check_game_over():
                             self.is_gameover = True
                             self.state = "stopped"
-                            self.scene = Scene.GAMEOVER_SCENE
+                            self.current_scene = Scenes(Scene.GAMEOVER_SCENE)
                         self.add_scores()
                         self.generate_new_block()
 
@@ -206,7 +207,11 @@ class Tetris:
             self.current_scene.show_rankings_scene()
         elif self.current_scene.scene == Scene.GAMEOVER_SCENE:
             self.current_scene.game_over_scene()
-        else:
+        elif self.current_scene.scene == Scene.PAUSE_SCENE:
+            self.current_scene.pause_scene()
+        elif self.current_scene.scene == Scene.CONTROLS_SCENE:
+            self.current_scene.controls_scene()
+        elif self.current_scene.scene == Scene.PLAY_SCENE:
             pyxel.cls(0)  # Clears screen and sets background to black
             self.text()
             self.ui.draw_game_borders()
@@ -229,12 +234,12 @@ class Tetris:
             
             # Pause screen
             if self.state == "paused":
-                self.ui.paused()
+                self.current_scene = Scenes(Scene.PAUSE_SCENE)
 
             # Game over screen
             if self.is_gameover:
-                self.ui.game_over_screen()
-                self.state = "stopped"
+                self.state = "stopped"  
+                self.current_scene = Scenes(Scene.GAMEOVER_SCENE)
 
     # Checks if game over condition is true
     def check_game_over(self):
@@ -316,19 +321,19 @@ class Tetris:
         pyxel.text(C.WINDOW / 2 + 1, 150, "R: ", 10)
         pyxel.text(C.WINDOW / 2 + 20, 150, "RESTART", 6)
 
-        pyxel.text(C.WINDOW / 2 + 1, 170, "LEFT: ", 10)
-        pyxel.text(C.WINDOW / 2 + 30, 170, "MOVE LEFT", 6)
-        pyxel.text(C.WINDOW / 2 + 1, 180, "RIGHT: ", 10)
-        pyxel.text(C.WINDOW / 2 + 30, 180, "MOVE RIGHT", 6)
-        pyxel.text(C.WINDOW / 2 + 1, 190, "DOWN: ", 10)
-        pyxel.text(C.WINDOW / 2 + 30, 190, "MOVE DOWN", 6)
-        pyxel.text(C.WINDOW / 2 + 1, 200, "SPACE: ", 10)
-        pyxel.text(C.WINDOW / 2 + 30, 200, "HARD DROP", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 170, "LEFT: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 30, 170, "MOVE LEFT", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 180, "RIGHT: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 30, 180, "MOVE RIGHT", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 190, "DOWN: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 30, 190, "MOVE DOWN", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 200, "SPACE: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 30, 200, "HARD DROP", 6)
 
-        pyxel.text(C.WINDOW / 2 + 1, 220, "Z: ", 10)
-        pyxel.text(C.WINDOW / 2 + 20, 220, "ROTATE LEFT", 6)
-        pyxel.text(C.WINDOW / 2 + 1, 230, "X: ", 10)
-        pyxel.text(C.WINDOW / 2 + 20, 230, "ROTATE RIGHT", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 220, "Z: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 20, 220, "ROTATE LEFT", 6)
+        # pyxel.text(C.WINDOW / 2 + 1, 230, "X: ", 10)
+        # pyxel.text(C.WINDOW / 2 + 20, 230, "ROTATE RIGHT", 6)
 
 
 if __name__ == "__main__":
