@@ -42,6 +42,9 @@ class Scenes:
         elif scene == Scene.GAMEOVER_SCENE:
             self.scene = scene
             self.display = self.game_over_scene()
+        elif scene == Scene.TEST_SCENE:
+            self.scene = scene
+            self.display = self.test_scene()
         else:
             self.scene = Scene.PLAY_SCENE
         
@@ -49,14 +52,14 @@ class Scenes:
         pyxel.cls(0)
 
         # Displaying tilemap(2) to draw to
-        pyxel.bltm(20, 0, 2, 0, 0, WINDOW, WINDOW)
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
 
         # Displays each tetromino at the bottom of the window
         for index, v in enumerate(range(50, 70, 3)):
             pyxel.tilemap(2).blt(
                 x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
                                # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
-                y=(32 * 0.875) + 1 if index == 0 else (32 * 0.875),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
                                                                       # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
                 tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
                 u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
@@ -84,14 +87,14 @@ class Scenes:
         pyxel.cls(0)
 
         # Displaying tilemap(2) to draw to
-        pyxel.bltm(20, 0, 2, 0, 0, WINDOW, WINDOW)
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
 
         # Displays each tetromino at the bottom of the window
         for index, v in enumerate(range(50, 70, 3)):
             pyxel.tilemap(2).blt(
                 x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
                                # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
-                y=(32 * 0.875) + 1 if index == 0 else (32 * 0.875),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
                                                                       # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
                 tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
                 u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
@@ -116,14 +119,14 @@ class Scenes:
         pyxel.cls(0)
 
         # Displaying tilemap(2) to draw to
-        pyxel.bltm(20, 0, 2, 0, 0, WINDOW, WINDOW)
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
 
         # Displays each tetromino at the bottom of the window
         for index, v in enumerate(range(50, 70, 3)):
             pyxel.tilemap(2).blt(
                 x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
                                # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
-                y=(32 * 0.875) + 1 if index == 0 else (32 * 0.875),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
                                                                       # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
                 tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
                 u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
@@ -136,8 +139,8 @@ class Scenes:
         pyxel.bltm((WINDOW / 2) - 20, (WINDOW / 2) - 32, 1, 0, 192, 40, 8)
 
         # Display arrow representing left and right to select speed
-        pyxel.bltm((WINDOW / 2) - 40, (WINDOW / 2), 1, 40, 192, 8, 8)
-        pyxel.bltm((WINDOW / 2) + 32, (WINDOW / 2), 1, 40, 192, -8, 8)
+        pyxel.bltm(WINDOW * 0.20, (WINDOW / 2), 1, 40, 192, 8, 8)
+        pyxel.bltm(WINDOW * 0.80 - 8, (WINDOW / 2), 1, 40, 192, -8, 8)
         
         # Displays "GO BACK"
         pyxel.bltm((WINDOW / 2) - 28, (WINDOW / 2) + 64, 1, 0, 176, 56, 8)
@@ -146,14 +149,14 @@ class Scenes:
         pyxel.cls(0)
         
         # Displaying tilemap(2) to draw to
-        pyxel.bltm(20, 0, 2, 0, 0, WINDOW, WINDOW)
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
 
         # Displays each tetromino at the bottom of the window
         for index, v in enumerate(range(50, 70, 3)):
             pyxel.tilemap(2).blt(
                 x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
                                # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
-                y=(32 * 0.875) + 1 if index == 0 else (32 * 0.875),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
                                                                       # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
                 tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
                 u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
@@ -187,14 +190,14 @@ class Scenes:
         pyxel.cls(0)
         
         # Displaying tilemap(2) to draw to
-        pyxel.bltm(20, 0, 2, 0, 0, WINDOW, WINDOW)
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
 
         # Displays each tetromino at the bottom of the window
         for index, v in enumerate(range(50, 70, 3)):
             pyxel.tilemap(2).blt(
                 x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
                                # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
-                y=(32 * 0.875) + 1 if index == 0 else (32 * 0.875),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
                                                                       # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
                 tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
                 u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
@@ -272,6 +275,23 @@ class Scenes:
     def controls_scene(self):
         pyxel.cls(0)
 
+         # Displaying tilemap(2) to draw to
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
+
+        # Displays each tetromino at the bottom of the window
+        for index, v in enumerate(range(50, 70, 3)):
+            pyxel.tilemap(2).blt(
+                x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
+                               # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                                                                      # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
+                tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
+                u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
+                v=v,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
+                w=self.tetromino_width_and_height_in_tilemap[index][0],  # The width of the tile in the tilemap. 1 tile = 1, so w=10 means 10 tiles across
+                h=self.tetromino_width_and_height_in_tilemap[index][1],  # The height of the tile in the tilemap. 1 tile = 1, so h=1 means 1 tile high.
+            )
+
         # Display "CONTROLS"
         pyxel.bltm((WINDOW / 2) - 32, WINDOW * 0.1, 1, 0, 32, 64, 8)
 
@@ -298,3 +318,6 @@ class Scenes:
 
         # Displays "GO BACK"
         pyxel.bltm((WINDOW / 2) - 28, WINDOW * 0.885, 1, 0, 176, 56, 8)
+
+    def test_scene(self):
+        pyxel.cls(0)

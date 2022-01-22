@@ -90,6 +90,16 @@ class Move:
                         return True
         return False
 
+    def above_collision(self, mino, x, y, orientation):
+        block = mino.mino["block"][orientation]
+
+        for row in range(4):
+            for col in range(4):
+                if block[row][col] != 0:
+                    if self.board[row + y - 1][col + x] != 0:
+                        return True
+        return False
+
     def can_rotate(self, mino, x, y, orientation):
         block = mino.mino["block"][orientation]
         
@@ -102,3 +112,7 @@ class Move:
                     elif self.board[row + y][col + x] != 0:
                         return False
         return True
+
+    def check_if_locked(self, x, y, mino, orientation):
+        return self.left_collision(mino, x, y, orientation) and self.right_collision(mino, x, y, orientation) \
+            and self.above_collision(mino, x, y, orientation)

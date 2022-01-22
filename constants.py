@@ -11,6 +11,7 @@ class Scene(Enum):
     PLAY_SCENE = 7
     GAMEOVER_SCENE = 8
     PAUSE_SCENE = 9
+    TEST_SCENE = 10
 
 # Height and width of app window
 WINDOW = 256
@@ -36,7 +37,7 @@ LINES = 0
 COMBOS = 0
 SPINS = 0
 FALL_SPEED = 4
-LOCK_DELAY = 60
+LOCK_DELAY = 90
 
 # Scoring system
 # Points given per line cleared
