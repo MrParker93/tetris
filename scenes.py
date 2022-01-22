@@ -321,3 +321,5 @@ class Scenes:
 
     def test_scene(self):
         pyxel.cls(0)
+        pyxel.blt(WINDOW/2, WINDOW/2, 0, 32, 0, 8, 8)
+        pyxel.blt(WINDOW/2 - 4, WINDOW/2 - 4, 0, 64, 0, 8, 8)

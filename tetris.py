@@ -4,7 +4,7 @@ from ui import UI
 import constants as C
 from board import Board
 from score import Score
-from copy import deepcopy
+from copy import copy, deepcopy
 from movement import Move
 from scenes import Scenes
 from constants import Scene
@@ -344,12 +344,12 @@ class Tetris:
                     if not self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
                         self.block_position_y += 1
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                     else:
                         if pyxel.frame_count % self.lock_delay == 0:
                             self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                            self.b.grid = deepcopy(self.b.board)
+                            # self.b.grid = self.b.board
 
                             if self.check_game_over():
                                 self.is_gameover = True
@@ -364,8 +364,8 @@ class Tetris:
                         self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                         self.block_position_x = self.move.move_left()
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
 
                 # Move the tetromino right
                 if pyxel.btnp(pyxel.KEY_RIGHT, 10, 2) and not pyxel.btn(pyxel.KEY_LEFT):
@@ -373,8 +373,8 @@ class Tetris:
                         self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                         self.block_position_x = self.move.move_right()
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
 
                 # Move the tetromino down
                 if pyxel.btnp(pyxel.KEY_DOWN, 10, 2):
@@ -382,8 +382,8 @@ class Tetris:
                         self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                         self.block_position_y = self.move.move_down()
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         
                         # Reward 1 point per cell when tetromino is soft dropped
                         if not self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
@@ -392,7 +392,7 @@ class Tetris:
                         if pyxel.frame_count % self.lock_delay == 0:
                             if self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
                                 self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                                self.b.grid = deepcopy(self.b.board)
+                                # self.b.grid = self.b.board
 
                                 if self.check_game_over():
                                     self.is_gameover = True
@@ -408,13 +408,13 @@ class Tetris:
                         self.move = Move(self.block_position_x, self.block_position_y, self.current_block_orientation, self.tetromino, self.b.board)
                         self.block_position_y = self.move.hard_drop()
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
 
                         if pyxel.frame_count % self.lock_delay == 0:
                             if self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
                                 self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                                self.b.grid = deepcopy(self.b.board)
+                                # self.b.grid = self.b.board
                                 
                                 if self.check_game_over():
                                     self.is_gameover = True
@@ -442,8 +442,8 @@ class Tetris:
                                 self.current_block_orientation -= 1 if self.current_block_orientation > 0 else -3
 
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         
                         # Check if the current position of the tetromino is locked in place
                         if self.move.check_if_locked(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation):
@@ -467,8 +467,8 @@ class Tetris:
                                 self.current_block_orientation += 1 if self.current_block_orientation < 3 else -3
 
                         self.b.grid = deepcopy(self.b.board)
-                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
                         self.b.drop_block_estimate(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
+                        self.b.drop_block(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation)
 
                         # Check if the current position of the tetromino is locked in place
                         if self.move.check_if_locked(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation):
@@ -506,8 +506,12 @@ class Tetris:
             pyxel.cls(0)  # Clears screen and sets background to black
             self.text()
             self.ui.draw_game_borders()
-            self.b.draw_board(self.tetromino.mino, self.tetromino.estimate, self.tetromino.image_map_position, self.tetromino.current_orientation)
             self.b.draw_next(self.next_tetromino)
+            self.b.draw_board(self.tetromino.mino, self.tetromino.estimate, self.tetromino.image_map_position, self.tetromino.current_orientation)
+
+            if self.b.clear_lines():
+                self.b.draw_destoryed_lines(self.b.destroyed_lines, self.b.board)
+
             if self.is_spin:
                 self.s.display_spin_type(self.s.show_spin, self.s.consecutive_spins)
                 if pyxel.frame_count % 480 == 0:
@@ -662,20 +666,6 @@ class Tetris:
         pyxel.text(C.WINDOW / 2 + 20, 140, "QUIT", 6)
         pyxel.text(C.WINDOW / 2 + 1, 150, "R: ", 10)
         pyxel.text(C.WINDOW / 2 + 20, 150, "RESTART", 6)
-
-        # pyxel.text(C.WINDOW / 2 + 1, 170, "LEFT: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 30, 170, "MOVE LEFT", 6)
-        # pyxel.text(C.WINDOW / 2 + 1, 180, "RIGHT: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 30, 180, "MOVE RIGHT", 6)
-        # pyxel.text(C.WINDOW / 2 + 1, 190, "DOWN: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 30, 190, "MOVE DOWN", 6)
-        # pyxel.text(C.WINDOW / 2 + 1, 200, "SPACE: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 30, 200, "HARD DROP", 6)
-
-        # pyxel.text(C.WINDOW / 2 + 1, 220, "Z: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 20, 220, "ROTATE LEFT", 6)
-        # pyxel.text(C.WINDOW / 2 + 1, 230, "X: ", 10)
-        # pyxel.text(C.WINDOW / 2 + 20, 230, "ROTATE RIGHT", 6)
 
 
 if __name__ == "__main__":
