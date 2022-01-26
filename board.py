@@ -143,18 +143,11 @@ class Board:
     # Fixes the block in the current position and adds to the board
     def fix_block(self, x, y, mino, orientation):
         block = mino.mino["block"][orientation]
-        image_map_x = mino.image_map_position[0]
-        image_map_y = mino.image_map_position[1]
         for row in range(4):
             for col in range(4):
                 if block[row][col] != 0:
                     self.board[row + y][col + x] = block[row][col]
-                    current_block_col = col * C.GRID_SIZE
-                    current_block_row = row * C.GRID_SIZE
-                    # Draws the current tetromino on the grid
-                    pyxel.blt(col + x * C.GRID_SIZE + C.LEFTRIGHT_PADDING + 8, row + y * C.GRID_SIZE + C.TOP_PADDING, 0, image_map_x + current_block_col, image_map_y + current_block_row, C.GRID_SIZE, C.GRID_SIZE)
-        self.grid = self.board    
-
+        
     # Clears a row if it's full
     def clear_lines(self):
         lines_to_clear = []
@@ -183,10 +176,7 @@ class Board:
             self.consecutive_clears = 0
             return False
 
-    def draw_destoryed_lines(self, row_to_clear, board):
-        for row in range(27):
-            if board[row].count(0) == 0:
-                if row == row_to_clear[row]:
-                    for col in range(len(board[0])):
-                        pyxel.blt(col * C.GRID_SIZE + C.LEFTRIGHT_PADDING + 8, row * C.GRID_SIZE + C.TOP_PADDING, 0, 32, 0, C.GRID_SIZE, C.GRID_SIZE)
-        self.destroyed_lines.clear()
+    # Draw graphics for cleared line
+    def draw_destoryed_lines(self, row_to_clear):
+        for row in range(len(row_to_clear)):
+            pyxel.bltm(C.LEFTRIGHT_PADDING + 8, C.TOP_PADDING + row_to_clear[row] * 8, 4, 0, 7 * 8, 80, 8)

@@ -4,7 +4,7 @@ from ui import UI
 import constants as C
 from board import Board
 from score import Score
-from copy import copy, deepcopy
+from copy import deepcopy
 from movement import Move
 from scenes import Scenes
 from constants import Scene
@@ -23,6 +23,7 @@ class Tetris:
         self.state = "running"
         self.is_gameover = False
         self.current_scene = Scenes(Scene.TITLE_SCENE)
+        self.player_name = ""
         self.lock_delay = C.LOCK_DELAY
         self.block_fall_speed = C.FALL_SPEED
         self.s = Score()
@@ -35,6 +36,8 @@ class Tetris:
         self.combos = self.s.combos
         self.spins = self.s.spins
         self.consecutive_spins = 0
+        self.letter_count = 0
+        self.cleared = False
         self.is_spin = False
         self.is_tetris = False
         self.is_combo = False
@@ -60,6 +63,7 @@ class Tetris:
         # Resets the game
         if self.state == "running" or self.state == "stopped":
             if pyxel.btn(pyxel.KEY_R):
+                self.state = "stopped"
                 self.reset()
         
         # Pauses the game
@@ -105,15 +109,15 @@ class Tetris:
                             self.menu_selector_position = ((C.WINDOW / 2) + 50, C.WINDOW / 2)
                             self.current_scene = Scenes(Scene.PAUSE_SCENE)
 
-        if self.state == "stopped":
         # Navigating gameover scenes
+        if self.state == "stopped":
             if self.current_scene.scene == Scene.GAMEOVER_SCENE:
                 if pyxel.btnp(pyxel.KEY_DOWN, 15, 2) and not pyxel.btn(pyxel.KEY_UP):
                     if self.menu_selector_position[1] == (C.WINDOW / 2):
-                        self.menu_selector_position = (self.menu_selector_position[0] + 8, self.menu_selector_position[1] + 23)
+                        self.menu_selector_position = (self.menu_selector_position[0] + 20, self.menu_selector_position[1] + 23)
                     
                     elif self.menu_selector_position[1] == (C.WINDOW / 2) + 23:
-                        self.menu_selector_position = (self.menu_selector_position[0] + 8, self.menu_selector_position[1] + 23)
+                        self.menu_selector_position = (self.menu_selector_position[0] - 4, self.menu_selector_position[1] + 23)
                     
                     elif self.menu_selector_position[1] == (C.WINDOW / 2) + 46:
                         self.menu_selector_position = (self.menu_selector_position[0] - 16, (C.WINDOW / 2))
@@ -123,10 +127,10 @@ class Tetris:
                         self.menu_selector_position = (self.menu_selector_position[0] + 16, self.menu_selector_position[1] + 46)
                     
                     elif self.menu_selector_position[1] == (C.WINDOW / 2) + 23:
-                        self.menu_selector_position = (self.menu_selector_position[0] - 8, self.menu_selector_position[1] - 23)
+                        self.menu_selector_position = (self.menu_selector_position[0] - 20, self.menu_selector_position[1] - 23)
                     
                     elif self.menu_selector_position[1] == (C.WINDOW / 2) + 46:
-                        self.menu_selector_position = (self.menu_selector_position[0] - 8, self.menu_selector_position[1] - 23)
+                        self.menu_selector_position = (self.menu_selector_position[0] + 4, self.menu_selector_position[1] - 23)
 
                 if self.menu_selector_position[1] == (C.WINDOW / 2):
                     if pyxel.btn(pyxel.KEY_SPACE):
@@ -136,8 +140,7 @@ class Tetris:
 
                 elif self.menu_selector_position[1] == (C.WINDOW / 2) + 23:
                     if pyxel.btnp(pyxel.KEY_SPACE):
-                        self.current_scene = Scenes(Scene.PLAY_SCENE)
-                        self.state = "running"
+                        self.current_scene = Scenes(Scene.ADD_SCORE_SCENE)
                     
                 elif self.menu_selector_position[1] == (C.WINDOW / 2) + 46:
                     if pyxel.btnr(pyxel.KEY_SPACE):
@@ -169,9 +172,8 @@ class Tetris:
 
                 # Navigate to other scenes based on arrow position
                 if self.menu_selector_position[1] == (C.WINDOW / 2):
-                    if pyxel.btn(pyxel.KEY_SPACE):
-                        if pyxel.frame_count % 10 == 0:
-                            self.current_scene = Scenes(Scene.PLAY_SCENE)
+                    if pyxel.btnp(pyxel.KEY_SPACE, 15, 2):
+                            self.current_scene = Scenes(Scene.ADD_NAME_SCENE)
                 
                 elif self.menu_selector_position[1] == (C.WINDOW / 2) + 16:
                     if pyxel.btn(pyxel.KEY_SPACE):
@@ -319,7 +321,194 @@ class Tetris:
                     if pyxel.btnp(pyxel.KEY_SPACE, hold=300, repeat=300):
                         self.menu_selector_position = ((C.WINDOW / 2) + 50, C.WINDOW / 2)
                         self.current_scene = Scenes(Scene.TITLE_SCENE)
-                
+            
+            # Navigate the add name scene
+            if self.current_scene.scene == Scene.ADD_NAME_SCENE:
+                if pyxel.btnp(pyxel.KEY_LEFT, 15, 2) and not pyxel.btn(pyxel.KEY_RIGHT):
+                    self.menu_selector_position = (self.menu_selector_position[0] - 12, self.menu_selector_position[1])
+                    if self.menu_selector_position[1] >= 173:
+                        if self.menu_selector_position[0] < 178:
+                            self.menu_selector_position = (self.menu_selector_position[0] + (12 * 3), self.menu_selector_position[1])
+
+                    elif self.menu_selector_position[0] < 178:
+                        self.menu_selector_position = (self.menu_selector_position[0] + (12 * 11), self.menu_selector_position[1])
+
+                if pyxel.btnp(pyxel.KEY_RIGHT, 15, 2) and not pyxel.btn(pyxel.KEY_LEFT):
+                    self.menu_selector_position = (self.menu_selector_position[0] + 12, self.menu_selector_position[1])
+                    if self.menu_selector_position[1] >= 173:
+                        if self.menu_selector_position[0] > 202:
+                            self.menu_selector_position = (self.menu_selector_position[0] - (12 * 3), self.menu_selector_position[1])
+                    
+                    elif self.menu_selector_position[0] > 298:
+                        self.menu_selector_position = (self.menu_selector_position[0] - (12 * 11), self.menu_selector_position[1])
+
+                if pyxel.btnp(pyxel.KEY_UP, 15, 2) and not pyxel.btn(pyxel.KEY_DOWN):
+                    self.menu_selector_position = (self.menu_selector_position[0], self.menu_selector_position[1] - 15)
+                    if self.menu_selector_position[1] < 128:
+                        if self.menu_selector_position[0] == 214:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 12, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 226:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 24, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 238:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 36, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 250:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 48, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 262:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 60, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 274:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 72, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 286:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 84, self.menu_selector_position[1] + 60)
+                        elif self.menu_selector_position[0] == 298:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 96, self.menu_selector_position[1] + 60)
+                        else:
+                            self.menu_selector_position = (self.menu_selector_position[0], self.menu_selector_position[1] + 60)
+                    
+                if pyxel.btnp(pyxel.KEY_DOWN, 15, 2) and not pyxel.btn(pyxel.KEY_UP):
+                    self.menu_selector_position = (self.menu_selector_position[0], self.menu_selector_position[1] + 15)
+                    if self.menu_selector_position[1] > 158:
+                        if self.menu_selector_position[0] == 214:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 12, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 226:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 24, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 238:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 36, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 250:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 48, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 262:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 60, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 274:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 72, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 286:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 84, self.menu_selector_position[1])
+                        elif self.menu_selector_position[0] == 298:
+                            self.menu_selector_position = (self.menu_selector_position[0] - 96, self.menu_selector_position[1])
+                        elif self.menu_selector_position[1] > 173:
+                            self.menu_selector_position = (self.menu_selector_position[0], self.menu_selector_position[1] - 60)
+
+                if pyxel.btnr(pyxel.KEY_SPACE):
+                    if self.letter_count == 3:
+                        self.letter_count = 0
+                        self.player_name = ""
+                    self.letter_count += 1
+
+                    if self.menu_selector_position[1] == 128:
+                        if self.menu_selector_position[0] == 178:
+                            self.current_scene.display(char="A", letter_count=self.letter_count)
+                            self.player_name += "A"
+                        if self.menu_selector_position[0] == 190:
+                            self.current_scene.display(char="B", letter_count=self.letter_count)
+                            self.player_name += "B"
+                        if self.menu_selector_position[0] == 202:
+                            self.current_scene.display(char="C", letter_count=self.letter_count)
+                            self.player_name += "C"
+                        if self.menu_selector_position[0] == 214:
+                            self.current_scene.display(char="D", letter_count=self.letter_count)
+                            self.player_name += "D"
+                        if self.menu_selector_position[0] == 226:
+                            self.current_scene.display(char="E", letter_count=self.letter_count)
+                            self.player_name += "E"
+                        if self.menu_selector_position[0] == 238:
+                            self.current_scene.display(char="F", letter_count=self.letter_count)
+                            self.player_name += "F"
+                        if self.menu_selector_position[0] == 250:
+                            self.current_scene.display(char="G", letter_count=self.letter_count)
+                            self.player_name += "G"
+                        if self.menu_selector_position[0] == 262:
+                            self.current_scene.display(char="H", letter_count=self.letter_count)
+                            self.player_name += "H"
+                        if self.menu_selector_position[0] == 274:
+                            self.current_scene.display(char="I", letter_count=self.letter_count)
+                            self.player_name += "I"
+                        if self.menu_selector_position[0] == 286:
+                            self.current_scene.display(char="J", letter_count=self.letter_count)
+                            self.player_name += "J"
+                        if self.menu_selector_position[0] == 298:
+                            self.current_scene.display(char="K", letter_count=self.letter_count)
+                            self.player_name += "K"
+                    elif self.menu_selector_position[1] == 143:
+                        if self.menu_selector_position[0] == 178:
+                            self.current_scene.display(char="L", letter_count=self.letter_count)
+                            self.player_name += "L"
+                        if self.menu_selector_position[0] == 190:
+                            self.current_scene.display(char="M", letter_count=self.letter_count)
+                            self.player_name += "M"
+                        if self.menu_selector_position[0] == 202:
+                            self.current_scene.display(char="N", letter_count=self.letter_count)
+                            self.player_name += "N"
+                        if self.menu_selector_position[0] == 214:
+                            self.current_scene.display(char="O", letter_count=self.letter_count)
+                            self.player_name += "O"
+                        if self.menu_selector_position[0] == 226:
+                            self.current_scene.display(char="P", letter_count=self.letter_count)
+                            self.player_name += "P"
+                        if self.menu_selector_position[0] == 238:
+                            self.current_scene.display(char="Q", letter_count=self.letter_count)
+                            self.player_name += "Q"
+                        if self.menu_selector_position[0] == 250:
+                            self.current_scene.display(char="R", letter_count=self.letter_count)
+                            self.player_name += "R"
+                        if self.menu_selector_position[0] == 262:
+                            self.current_scene.display(char="S", letter_count=self.letter_count)
+                            self.player_name += "S"
+                        if self.menu_selector_position[0] == 274:
+                            self.current_scene.display(char="T", letter_count=self.letter_count)
+                            self.player_name += "T"
+                        if self.menu_selector_position[0] == 286:
+                            self.current_scene.display(char="U", letter_count=self.letter_count)
+                            self.player_name += "U"
+                        if self.menu_selector_position[0] == 298:
+                            self.current_scene.display(char="V", letter_count=self.letter_count)
+                            self.player_name += "V"
+                    elif self.menu_selector_position[1] == 158:
+                        if self.menu_selector_position[0] == 178:
+                            self.current_scene.display(char="W", letter_count=self.letter_count)
+                            self.player_name += "W"
+                        if self.menu_selector_position[0] == 190:
+                            self.current_scene.display(char="X", letter_count=self.letter_count)
+                            self.player_name += "X"
+                        if self.menu_selector_position[0] == 202:
+                            self.current_scene.display(char="Y", letter_count=self.letter_count)
+                            self.player_name += "Y"
+                        if self.menu_selector_position[0] == 214:
+                            self.current_scene.display(char="Z", letter_count=self.letter_count)
+                            self.player_name += "Z"
+                        if self.menu_selector_position[0] == 226:
+                            self.current_scene.display(char="0", letter_count=self.letter_count)
+                            self.player_name += "0"
+                        if self.menu_selector_position[0] == 238:
+                            self.current_scene.display(char="1", letter_count=self.letter_count)
+                            self.player_name += "1"
+                        if self.menu_selector_position[0] == 250:
+                            self.current_scene.display(char="2", letter_count=self.letter_count)
+                            self.player_name += "2"
+                        if self.menu_selector_position[0] == 262:
+                            self.current_scene.display(char="3", letter_count=self.letter_count)
+                            self.player_name += "3"
+                        if self.menu_selector_position[0] == 274:
+                            self.current_scene.display(char="4", letter_count=self.letter_count)
+                            self.player_name += "4"
+                        if self.menu_selector_position[0] == 286:
+                            self.current_scene.display(char="5", letter_count=self.letter_count)
+                            self.player_name += "5"
+                        if self.menu_selector_position[0] == 298:
+                            self.current_scene.display(char="6", letter_count=self.letter_count)
+                            self.player_name += "6"
+                    elif self.menu_selector_position[1] == 173:
+                        if self.menu_selector_position[0] == 178:
+                            self.current_scene.display(char="7", letter_count=self.letter_count)
+                            self.player_name += "7"
+                        if self.menu_selector_position[0] == 190:
+                            self.current_scene.display(char="8", letter_count=self.letter_count)
+                            self.player_name += "8"
+                        if self.menu_selector_position[0] == 202:
+                            self.current_scene.display(char="9", letter_count=self.letter_count)
+                            self.player_name += "9"
+
+                if pyxel.btnr(pyxel.KEY_RETURN):
+                    self.player_name = self.player_name[:3]
+                    self.current_scene = Scenes(Scene.PLAY_SCENE)
+
             if self.current_scene.scene == Scene.TEST_SCENE:
                 if pyxel.btn(pyxel.KEY_W):
                     if pyxel.frame_count % 10 == 0:
@@ -336,7 +525,7 @@ class Tetris:
 
                 if pyxel.btnv(pyxel.KEY_I):
                     print(pyxel.btnv(pyxel.KEY_I))
-                        
+            
             if self.current_scene.scene == Scene.PLAY_SCENE:
                 
                 # Makes the tetromino fall after a specific number of frames
@@ -349,7 +538,7 @@ class Tetris:
                     else:
                         if pyxel.frame_count % self.lock_delay == 0:
                             self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                            # self.b.grid = self.b.board
+                            self.b.grid = self.b.board
 
                             if self.check_game_over():
                                 self.is_gameover = True
@@ -392,7 +581,7 @@ class Tetris:
                         if pyxel.frame_count % self.lock_delay == 0:
                             if self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
                                 self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                                # self.b.grid = self.b.board
+                                self.b.grid = self.b.board
 
                                 if self.check_game_over():
                                     self.is_gameover = True
@@ -414,8 +603,8 @@ class Tetris:
                         if pyxel.frame_count % self.lock_delay == 0:
                             if self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation):
                                 self.b.fix_block(self.block_position_x, self.block_position_y, self.tetromino, self.current_block_orientation)
-                                # self.b.grid = self.b.board
-                                
+                                self.b.grid = self.b.board
+
                                 if self.check_game_over():
                                     self.is_gameover = True
                                     self.state = "stopped"
@@ -476,41 +665,21 @@ class Tetris:
 
     # Draws the game every frame, runs at 60fps
     def draw(self):
-        if self.current_scene.scene == Scene.TITLE_SCENE:
-            self.current_scene.title_scene()
+        if self.current_scene.scene != Scene.PLAY_SCENE:
+            self.current_scene.display()
             self.navigate_scenes()
-        elif self.current_scene.scene == Scene.SETTINGS_SCENE:
-            self.current_scene.settings_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.SELECT_SPEED_SCENE:
-            self.current_scene.select_fall_speed_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.SELECT_TETRIS_SCENE:
-            self.current_scene.select_tetris_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.RANKINGS_SCENE:
-            self.current_scene.show_rankings_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.GAMEOVER_SCENE:
-            self.current_scene.game_over_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.PAUSE_SCENE:
-            self.current_scene.pause_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.CONTROLS_SCENE:
-            self.current_scene.controls_scene()
-            self.navigate_scenes()
-        elif self.current_scene.scene == Scene.TEST_SCENE:
-            self.current_scene.test_scene() 
-        elif self.current_scene.scene == Scene.PLAY_SCENE:
+        else:
             pyxel.cls(0)  # Clears screen and sets background to black
             self.text()
             self.ui.draw_game_borders()
             self.b.draw_next(self.next_tetromino)
             self.b.draw_board(self.tetromino.mino, self.tetromino.estimate, self.tetromino.image_map_position, self.tetromino.current_orientation)
-
-            if self.b.clear_lines():
-                self.b.draw_destoryed_lines(self.b.destroyed_lines, self.b.board)
+            
+            if self.cleared:
+                self.b.draw_destoryed_lines(self.b.destroyed_lines)
+                if pyxel.frame_count % 50 == 0:
+                    self.b.destroyed_lines.clear()
+                    self.cleared = False
 
             if self.is_spin:
                 self.s.display_spin_type(self.s.show_spin, self.s.consecutive_spins)
@@ -534,11 +703,6 @@ class Tetris:
             # Pause screen
             if self.state == "paused":
                 self.current_scene = Scenes(Scene.PAUSE_SCENE)
-
-            # Game over screen
-            if self.is_gameover:
-                self.state = "stopped"  
-                self.current_scene = Scenes(Scene.GAMEOVER_SCENE)
 
     # Navigate the title screen
     def navigate_scenes(self):
@@ -567,6 +731,12 @@ class Tetris:
         if self.current_scene.scene == Scene.GAMEOVER_SCENE:
             pyxel.blt(self.menu_selector_position[0] - 8, self.menu_selector_position[1] + 50, 1, 0, 8, 8, 8)
 
+        if self.current_scene.scene == Scene.ADD_NAME_SCENE:
+            pyxel.blt(self.menu_selector_position[0] - 104, self.menu_selector_position[1] - 30, 1, 0, 8, 8, 8)
+
+        if self.current_scene.scene == Scene.ADD_SCORE_SCENE:
+            pass
+
     # Checks if game over condition is true
     def check_game_over(self):
         return self.b.detect_collision(self.block_position_x, self.block_position_y, self.tetromino.mino, self.current_block_orientation) if self.block_position_y < 0 else False
@@ -576,7 +746,7 @@ class Tetris:
 
         # Check if any lines were cleared
         if self.b.clear_lines():
-
+            self.cleared = True
             self.lines += self.b.cleared_lines
 
             if self.s.can_level_up(self.lines, self.level):
@@ -649,6 +819,8 @@ class Tetris:
         pyxel.FONT_WIDTH = 10
         pyxel.text(C.WINDOW / 2 + 45, 9, "HOLD: ", 10)
         pyxel.text(C.WINDOW / 2, 9, "NEXT: ", 10)
+        pyxel.text(C.WINDOW / 2 + 1, 60, "PLAYER: ", 10)
+        pyxel.text(C.WINDOW / 2 + 30, 60, self.player_name, 6)
         pyxel.text(C.WINDOW / 2 + 1, 70, "LEVEL: ", 10)
         pyxel.text(C.WINDOW / 2 + 30, 70, str(self.level), 6)
         pyxel.text(C.WINDOW / 2 + 1, 80, "SCORE: ", 10)

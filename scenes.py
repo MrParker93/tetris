@@ -1,3 +1,4 @@
+import string
 import pyxel
 from constants import Scene, WINDOW
 
@@ -20,31 +21,37 @@ class Scenes:
 
         if scene == Scene.TITLE_SCENE:
             self.scene = scene
-            self.display = self.title_scene()
+            self.display = self.title_scene
         elif scene == Scene.CONTROLS_SCENE:
             self.scene = scene
-            self.display = self.controls_scene()
+            self.display = self.controls_scene
         elif scene == Scene.SETTINGS_SCENE:
             self.scene = scene
-            self.display = self.settings_scene()
+            self.display = self.settings_scene
         elif scene == Scene.SELECT_SPEED_SCENE:
             self.scene = scene
-            self.display = self.select_fall_speed_scene()
+            self.display = self.select_fall_speed_scene
         elif scene == Scene.SELECT_TETRIS_SCENE:
             self.scene = scene
-            self.display = self.select_tetris_scene()
+            self.display = self.select_tetris_scene
         elif scene == Scene.RANKINGS_SCENE:
             self.scene = scene
-            self.display = self.show_rankings_scene()
+            self.display = self.show_rankings_scene
         elif scene == Scene.PAUSE_SCENE:
             self.scene = scene
-            self.display = self.pause_scene()
+            self.display = self.pause_scene
         elif scene == Scene.GAMEOVER_SCENE:
             self.scene = scene
-            self.display = self.game_over_scene()
+            self.display = self.game_over_scene
+        elif scene == Scene.ADD_NAME_SCENE:
+            self.scene = scene
+            self.display = self.add_player_name
+        elif scene == Scene.ADD_SCORE_SCENE:
+            self.scene = scene
+            self.display = self.add_highscore
         elif scene == Scene.TEST_SCENE:
             self.scene = scene
-            self.display = self.test_scene()
+            self.display = self.test_scene
         else:
             self.scene = Scene.PLAY_SCENE
         
@@ -254,8 +261,8 @@ class Scenes:
         # Display "RANKINGS"
         pyxel.bltm((WINDOW / 2) - 32, (WINDOW * 0.2) + ((WINDOW * 0.9) * 0.55), 1, 0, 64, 64, 8)
 
-        # Display "PLAY AGAIN"
-        pyxel.bltm((WINDOW / 2) - 40, (WINDOW * 0.2) + ((WINDOW * 0.9) * 0.65), 1, 0, 240, 80, 8)
+        # Display "ADD HIGHSCORE"
+        pyxel.bltm((WINDOW / 2) - 52, (WINDOW * 0.2) + ((WINDOW * 0.9) * 0.65), 1, 0, 240, 104, 8)
         
         # Display "TITLE SCREEN"
         pyxel.bltm((WINDOW / 2) - 48, (WINDOW * 0.2) + ((WINDOW * 0.9) * 0.75), 1, 0, 256, 96, 8)
@@ -318,8 +325,135 @@ class Scenes:
 
         # Displays "GO BACK"
         pyxel.bltm((WINDOW / 2) - 28, WINDOW * 0.885, 1, 0, 176, 56, 8)
+        
+    def add_highscore(self, score, lines, combos, spins, name):
+        # Will be linked to a database to store player names and stats
+        # Initially store names and scores in a csv or txt file
+        # Users will be able to add any name they want
+        pass
+
+    def add_player_name(self, char="", letter_count=0):
+        pyxel.cls(0)
+
+        # Displaying tilemap(2) to draw to
+        pyxel.bltm(20, 0, 2, 0, 16, WINDOW, WINDOW)
+
+        # Displays each tetromino at the bottom of the window
+        for index, v in enumerate(range(50, 70, 3)):
+            pyxel.tilemap(2).blt(
+                x=index * 4,   # The x coordinate relative to pyxel.bltm x coordinate. If pyxel.bltm x=3 and this x value = 5
+                               # then the x value on screen will be 3 + 5 = 8. Moves 8px per 1.
+                y=(32 * 0.95) + 1 if index == 0 else (32 * 0.95),   # The y coordinate relative to pyxel.bltm y coordinate. If pyxel.bltm y=3 and this y value = 5
+                                                                      # then the y value on screen will be 3 + 5 = 8. Moves 8px per 1.
+                tm=0, # The tilemap you want to reference. Can be any tilemap from 0-7 in the pyxeleditor.
+                u=0,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
+                v=v,  # The (x, y) coordinates of the TOP LEFT corner of the tile in the tilemap. (x, y) maps like this -> (u, v)
+                w=self.tetromino_width_and_height_in_tilemap[index][0],  # The width of the tile in the tilemap. 1 tile = 1, so w=10 means 10 tiles across
+                h=self.tetromino_width_and_height_in_tilemap[index][1],  # The height of the tile in the tilemap. 1 tile = 1, so h=1 means 1 tile high.
+            )
+
+        # Corresponding tile coordinates in the tilemap to each character
+        tilemap_letter_references = {
+            "A": (0, 0),
+            "B": (1, 0),
+            "C": (0, 1),
+            "D": (1, 1),   
+            "E": (0, 2),
+            "F": (1, 2),
+            "G": (0, 3),
+            "H": (1, 3),
+            "I": (0, 4),
+            "J": (1, 4),
+            "K": (0, 5),
+            "L": (1, 5),
+            "M": (0, 6),
+            "N": (1, 6),
+            "O": (0, 7),
+            "P": (1, 7),
+            "Q": (0, 8),
+            "R": (1, 8),
+            "S": (0, 9),
+            "T": (1, 9),
+            "U": (0, 10),
+            "V": (1, 10),
+            "W": (0, 11),
+            "X": (1, 11),
+            "Y": (0, 12),
+            "Z": (1, 12),
+            "0": (0, 13),
+            "1": (1, 13),
+            "2": (0, 14),
+            "3": (1, 14),
+            "4": (0, 15),
+            "5": (1, 15),
+            "6": (0, 16),
+            "7": (1, 16),
+            "8": (0, 17),
+            "9": (1, 17)
+        }
+
+        # Display "ENTER YOUR NAME"
+        pyxel.bltm((WINDOW / 2) - 60, WINDOW * 0.25, 1, 0, 480, 120, 8)
+
+        # Possible characters to spell name
+        pyxel.blt(WINDOW / 2 - 64, WINDOW / 2 - 30, 1, 16, 0, 8, 8)
+        pyxel.blt(WINDOW / 2 - 52, WINDOW / 2 - 30, 1, 24, 0, 8, 8)
+        pyxel.blt(WINDOW / 2 - 40, WINDOW / 2 - 30, 1, 16, 8, 8, 8)
+        pyxel.blt(WINDOW / 2 - 28, WINDOW / 2 - 30, 1, 24, 8, 8, 8)
+        pyxel.blt(WINDOW / 2 - 16, WINDOW / 2 - 30, 1, 16, 16, 8, 8)
+        pyxel.blt(WINDOW / 2 - 4, WINDOW / 2 - 30, 1, 24, 16, 8, 8)
+        pyxel.blt(WINDOW / 2 + 8, WINDOW / 2 - 30, 1, 16, 24, 8, 8)
+        pyxel.blt(WINDOW / 2 + 20, WINDOW / 2 - 30, 1, 24, 24, 8, 8)
+        pyxel.blt(WINDOW / 2 + 32, WINDOW / 2 - 30, 1, 16, 32, 8, 8)
+        pyxel.blt(WINDOW / 2 + 44, WINDOW / 2 - 30, 1, 24, 32, 8, 8)
+        pyxel.blt(WINDOW / 2 + 56, WINDOW / 2 - 30, 1, 16, 40, 8, 8)
+        pyxel.blt(WINDOW / 2 - 64, WINDOW / 2 - 15, 1, 24, 40, 8, 8)
+        pyxel.blt(WINDOW / 2 - 52, WINDOW / 2 - 15, 1, 16, 48, 8, 8)
+        pyxel.blt(WINDOW / 2 - 40, WINDOW / 2 - 15, 1, 24, 48, 8, 8)
+        pyxel.blt(WINDOW / 2 - 28, WINDOW / 2 - 15, 1, 16, 56, 8, 8)
+        pyxel.blt(WINDOW / 2 - 16, WINDOW / 2 - 15, 1, 24, 56, 8, 8)
+        pyxel.blt(WINDOW / 2 - 4, WINDOW / 2 - 15, 1, 16, 64, 8, 8)
+        pyxel.blt(WINDOW / 2 + 8, WINDOW / 2 - 15, 1, 24, 64, 8, 8)
+        pyxel.blt(WINDOW / 2 + 20, WINDOW / 2 - 15, 1, 16, 72, 8, 8)
+        pyxel.blt(WINDOW / 2 + 32, WINDOW / 2 - 15, 1, 24, 72, 8, 8)
+        pyxel.blt(WINDOW / 2 + 44, WINDOW / 2 - 15, 1, 16, 80, 8, 8)
+        pyxel.blt(WINDOW / 2 + 56, WINDOW / 2 - 15, 1, 24, 80, 8, 8)
+        pyxel.blt(WINDOW / 2 - 64, WINDOW / 2, 1, 16, 88, 8, 8)
+        pyxel.blt(WINDOW / 2 - 52, WINDOW / 2, 1, 24, 88, 8, 8)
+        pyxel.blt(WINDOW / 2 - 40, WINDOW / 2, 1, 16, 96, 8, 8)
+        pyxel.blt(WINDOW / 2 - 28, WINDOW / 2, 1, 24, 96, 8, 8)
+        pyxel.blt(WINDOW / 2 - 16, WINDOW / 2, 1, 16, 104, 8, 8)
+        pyxel.blt(WINDOW / 2 - 4, WINDOW / 2, 1, 24, 104, 8, 8)
+        pyxel.blt(WINDOW / 2 + 8, WINDOW / 2, 1, 16, 112, 8, 8)
+        pyxel.blt(WINDOW / 2 + 20, WINDOW / 2, 1, 24, 112, 8, 8)
+        pyxel.blt(WINDOW / 2 + 32, WINDOW / 2, 1, 16, 120, 8, 8)
+        pyxel.blt(WINDOW / 2 + 44, WINDOW / 2, 1, 24, 120, 8, 8)
+        pyxel.blt(WINDOW / 2 + 56, WINDOW / 2, 1, 16, 128, 8, 8)
+        pyxel.blt(WINDOW / 2 - 64, WINDOW / 2 + 15, 1, 24, 128, 8, 8)
+        pyxel.blt(WINDOW / 2 - 52, WINDOW / 2 + 15, 1, 16, 136, 8, 8)
+        pyxel.blt(WINDOW/2 - 40, WINDOW / 2 + 15, 1, 24, 136, 8, 8)
+
+        # Underscores to show user how long the name should be
+        pyxel.blt(WINDOW / 2 - 12, WINDOW / 2 + 50, 1, 16, 168, 8, 8)
+        pyxel.blt(WINDOW / 2 - 4, WINDOW / 2 + 50, 1, 16, 168, 8, 8)
+        pyxel.blt(WINDOW / 2 + 4, WINDOW / 2 + 50, 1, 16, 168, 8, 8)
+
+        
+        # The users chosen name will display here
+        pyxel.bltm(WINDOW / 2 - 12, WINDOW / 2 + 45, 3, 8 * 2, 0, 3 * 8, 1 * 8, 0)
+
+        # Add a character to player name
+        if letter_count == 1:
+            pyxel.tilemap(3).pset(2, 0, pyxel.tilemap(3).pget(tilemap_letter_references[char][0], tilemap_letter_references[char][1]))
+
+        elif letter_count == 2:
+            pyxel.tilemap(3).pset(3, 0, pyxel.tilemap(3).pget(tilemap_letter_references[char][0], tilemap_letter_references[char][1]))
+
+        elif letter_count == 3:
+            pyxel.tilemap(3).pset(4, 0, pyxel.tilemap(3).pget(tilemap_letter_references[char][0], tilemap_letter_references[char][1]))
+
+        # Displays "PRESS ENTER TO START GAME!"
+        pyxel.bltm((WINDOW / 2) - 84, (WINDOW / 2) + 70, 1, 0, 512, 168, 8)
 
     def test_scene(self):
         pyxel.cls(0)
-        pyxel.blt(WINDOW/2, WINDOW/2, 0, 32, 0, 8, 8)
-        pyxel.blt(WINDOW/2 - 4, WINDOW/2 - 4, 0, 64, 0, 8, 8)
